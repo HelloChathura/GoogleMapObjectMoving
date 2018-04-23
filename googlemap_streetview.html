@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+<style type="text/css">
+    html { height: 100% }
+    body { height: 100%; margin: 0; padding: 0 }
+    #map { height: 430px; width: 640px; }
+	.row {
+    display: table-row;
+    border: 1px solid black;
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry"></script>
+ 
+<script type="text/javascript">
+		  
+
+
+var line;
+var map;
+var pointDistances;
+
+	function initialize() {
+	
+	 var directionsDisplay = new google.maps.DirectionsRenderer;
+     var directionsService = new google.maps.DirectionsService;
+		
+	var lineCoordinates = [
+			new google.maps.LatLng(6.913167, 79.855809),
+			new google.maps.LatLng(6.915638, 79.855938),
+			new google.maps.LatLng(6.918322, 79.854307),
+			new google.maps.LatLng(6.919898, 79.853620), // nawam mawatha
+			new google.maps.LatLng(6.923008, 79.852418),
+			new google.maps.LatLng(6.921644, 79.855207), 
+			new google.maps.LatLng(6.919002, 79.860872),
+			new google.maps.LatLng(6.921473, 79.859327),
+			new google.maps.LatLng(6.921899, 79.858941), 
+			new google.maps.LatLng(6.922240, 79.858469), 
+			new google.maps.LatLng(6.923398, 79.856702),
+			
+	   ];
+ 
+		var mapOptions = {
+			center: new google.maps.LatLng(6.9219721, 79.863056),
+			zoom: 14,
+			streetViewControl: false,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+		};
+		
+		//var panorama;
+		
+		map = new google.maps.Map(document.getElementById('map'), mapOptions);
+		map.setCenter(lineCoordinates[0]);
+		
+		// point distances from beginning in %
+		var sphericalLib = google.maps.geometry.spherical;
+		pointDistances = [];
+		var pointZero = lineCoordinates[0];
+		var wholeDist = sphericalLib.computeDistanceBetween(
+							pointZero,
+							lineCoordinates[lineCoordinates.length - 1]);
+		
+		for (var i = 0; i < lineCoordinates.length; i++) {
+			pointDistances[i] = 80 * sphericalLib.computeDistanceBetween(
+											lineCoordinates[i], pointZero) / wholeDist;
+			//console.log('pointDistances[' + i + ']: ' + pointDistances[i]);
+		}
+		
+		// define polyline
+		var car = "M17.402,0H5.643C2.526,0,0,3.467,0,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759c3.116,0,5.644-2.527,5.644-5.644 V6.584C23.044,3.467,20.518,0,17.402,0z M22.057,14.188v11.665l-2.729,0.351v-4.806L22.057,14.188z M20.625,10.773 c-1.016,3.9-2.219,8.51-2.219,8.51H4.638l-2.222-8.51C2.417,10.773,11.3,7.755,20.625,10.773z M3.748,21.713v4.492l-2.73-0.349 V14.502L3.748,21.713z M1.018,37.938V27.579l2.73,0.343v8.196L1.018,37.938z M2.575,40.882l2.218-3.336h13.771l2.219,3.336H2.575z M19.328,35.805v-7.872l2.729-0.355v10.048L19.328,35.805z";
+		var icon = {
+		  path: car,
+		  scale: .2,
+		  strokeColor: '#000000',
+		  strokeWeight: .25,
+		  fillOpacity: 10,
+		  fillColor: '#ffff00',
+		  offset: '100%',
+		  anchor: new google.maps.Point(10, 0) 
+		};
+		var lineSymbol = {
+			  path:car,
+			  scale: .5,
+			  strokeColor: '#393',
+			  strokeWeight: .1,
+			  fillOpacity: 1,
+			  fillColor: '#070421',
+			  offset: '1%',
+			  anchor: new google.maps.Point(10, 25) 
+		};
+		
+
+		line = new google.maps.Polyline({
+			path: lineCoordinates,
+			strokeColor: '#FF0000',
+			strokeOpacity: 2.0,
+			strokeWeight: 5,
+			icons: [{
+				icon: lineSymbol,
+				offset: '100%'
+			}],
+			map: map
+		});
+		
+ directionsDisplay.setMap(map);
+		animateCircle();
+
+ 
+
+var id;
+	function animateCircle() {
+	
+	calculateAndDisplayRoute(directionsService, directionsDisplay); // Set by admin
+	
+		var count = 0;
+		var offset;
+		var sentiel = -1;
+		var lineCoordinates = [
+			new google.maps.LatLng(6.913167, 79.855809),
+			new google.maps.LatLng(6.915638, 79.855938),
+			new google.maps.LatLng(6.918322, 79.854307),
+			new google.maps.LatLng(6.919898, 79.853620), // nawam mawatha
+			new google.maps.LatLng(6.923008, 79.852418),
+			new google.maps.LatLng(6.921644, 79.855207), 
+			new google.maps.LatLng(6.919002, 79.860872),
+			new google.maps.LatLng(6.921473, 79.859327),
+			new google.maps.LatLng(6.921899, 79.858941), 
+			new google.maps.LatLng(6.922240, 79.858469), 
+			new google.maps.LatLng(6.923398, 79.856702),
+	   ]; 
+		id = window.setInterval(function () {
+			count = (count + 1) % 10000;
+			offset = count /8;
+			for (var i = pointDistances.length - 1; i > sentiel; i--) {
+			
+				if (offset > pointDistances[i]) {
+					var marker = new google.maps.Marker({
+						icon: {
+							url:"https://maps.gstatic.com/intl/en_us/mapfiles/markers2/measle_blue.png",
+							//animation: google.maps.Animation.DROP,
+							size: new google.maps.Size(7,7),
+							anchor: new google.maps.Point(4,4)
+						},
+						position: line.getPath().getAt(i),
+						center: lineCoordinates[i],
+						title: line.getPath().getAt(i).toUrlValue(6),
+						map: map
+					});
+					
+					streetViewLoad(i);
+
+					var distM = calculateDistance("6.923224","79.855522",lineCoordinates[i].toUrlValue().split(",")[0].trim(),lineCoordinates[i].toUrlValue().split(",")[1].trim());
+					
+					if(distM <= 150)
+					{
+					alert("You've reached to your destination. approx 100M");
+					}
+					
+					sentiel++;
+					break;
+				}
+			}
+			
+			// we have only one icon
+			var icons = line.get('icons');
+			icons[0].offset = (offset) + '%';
+			line.set('icons', icons);
+			
+			if (line.get('icons')[0].offset == "99.5%") {
+				icons[0].offset = '100%';
+				line.set('icons', icons);
+				window.clearInterval(id);
+			}
+			
+		}, 60);
+	}
+
+	function streetViewLoad(i){
+		var mapcoordintes_streetview = [
+			new google.maps.LatLng(6.913167, 79.855809),
+			new google.maps.LatLng(6.915638, 79.855938),
+			new google.maps.LatLng(6.918322, 79.854307),
+			new google.maps.LatLng(6.919898, 79.853620), // nawam mawatha
+			new google.maps.LatLng(6.923008, 79.852418),
+			new google.maps.LatLng(6.921644, 79.855207), 
+			new google.maps.LatLng(6.919002, 79.860872),
+			new google.maps.LatLng(6.921473, 79.859327),
+			new google.maps.LatLng(6.921899, 79.858941), 
+			new google.maps.LatLng(6.922240, 79.858469), 
+			new google.maps.LatLng(6.923398, 79.856702),
+	   ];
+	   var mapOptions = {
+			center: mapcoordintes_streetview[i],
+			zoom: 15,
+			streetViewControl: false,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+            
+
+		};
+		//street view
+		var panoramaOptions = {
+		position: mapcoordintes_streetview[i],
+		pov: {
+			heading: 0,
+			pitch: 0
+			},
+		
+		map: map
+			
+		};
+		
+		 panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+		 
+		 map.setStreetView(panorama);
+		// end street view
+	}
+	
+	//Polyline Click
+	 google.maps.event.addListener(line, 'click', function(event) {
+        alert( "Latitude: "+event.latLng.lat()+" "+", longitude: "+event.latLng.lng() ); 
+    });
+	 
+	}
+
+
+  function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+        var selectedMode = "DRIVING";
+        directionsService.route({
+          origin: {lat: 6.913167, lng: 79.855809},  // Set by admin.
+          destination: {lat:6.923224, lng:79.855522},  // Set by admin.
+          // Note that Javascript allows us to access the constant
+          travelMode: google.maps.TravelMode["DRIVING"]
+        }, function(response, status) {
+          if (status == 'OK') {
+            directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        })
+		};
+		
+function calculateDistance(destLat,destLng,currentLat,currentLng)
+{
+return distance = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(destLat, destLng), new google.maps.LatLng(currentLat, currentLng));  
+}
+		
+		
+google.maps.event.addDomListener(window, 'load', initialize);
+
+
+
+</script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgk4hjEjGKunak0OlYdHhHwiiv2jzrcHk"
+    async defer></script>
+</head>
+
+<body>
+   <!-- <div id='map'></div>
+	<div id="pano" style="width: 600px; height: 200px;float:left"></div>-->
+	
+<div class="container">
+  <div class="row">
+    <div class="col" id='map'>
+     
+    </div>
+  </div>
+  <div class="row" style="height:200px;margin-top:1px;background-color:#d6f2f2 ">
+    <div class="col">
+      <b><u>Location</b></u><br>
+	  <p>Latitude:<span id="idlatitude"></span></p>
+	  <p>Longitude:<span id="idlongitude"></span></p>
+	  <p><span id="roadlocation"></span></p>
+    </div>
+    <div class="col" >
+       <b><u>Sensor Reading </b></u>
+    </div>
+    <div class="col" id="pano">
+    
+    </div>
+
+	 <div class="col">
+        <b><u>OBD2 & CAN </b></u>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
